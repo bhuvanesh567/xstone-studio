@@ -1,6 +1,5 @@
 "use client";
-
-import React, { useRef, useMemo } from "react";
+import { useRef, useMemo, type ReactElement } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { Edges } from "@react-three/drei";
 import * as THREE from "three";
@@ -115,9 +114,9 @@ function CityGrid() {
 
   // Deterministically generate buildings and light beams
   const { buildings, lightBeams } = useMemo(() => {
-    const list: JSX.Element[] = [];
-    const beams: JSX.Element[] = [];
-    let seed = 120;
+  const list: ReactElement[] = [];
+  const beams: ReactElement[] = [];
+  let seed = 120;
     const gridCols = 8;
     const gridRows = 8;
     const spacing = 4.5;
