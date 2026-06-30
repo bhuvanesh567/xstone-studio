@@ -6,25 +6,49 @@ import { Sparkles, Mail, Phone, MapPin, CheckCircle2, ChevronRight } from "lucid
 export default function Contact() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  const [company, setCompany] = useState("");
+  const [business, setBusiness] = useState("");
+  const [industry, setIndustry] = useState("");
+  const [website, setWebsite] = useState("");
+  const [phone, setPhone] = useState("");
+  const [budget, setBudget] = useState("");
+  const [timeline, setTimeline] = useState("");
   const [message, setMessage] = useState("");
   const [submitted, setSubmitted] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name || !email || !message) return;
+
+    const data = {
+      name,
+      business,
+      industry,
+      website,
+      phone,
+      email,
+      budget,
+      timeline,
+      message,
+    };
 
     try {
-      await fetch("/api/send-email", {
+      const webhookUrl = process.env.NEXT_PUBLIC_N8N_WEBHOOK_URL || "http://localhost:5678/webhook-test/new-lead";
+      const response = await fetch(webhookUrl, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, company, message })
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
       });
-    } catch (error) {
-      console.error("Failed to forward automated email payload:", error);
-    }
 
-    setSubmitted(true);
+      const result = await response.json();
+      console.log(result);
+
+      alert("Lead submitted successfully!");
+      setSubmitted(true);
+    } catch (error) {
+      console.error(error);
+      alert("Submission failed");
+    }
   };
 
   return (
@@ -80,6 +104,7 @@ export default function Contact() {
             {!submitted ? (
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {/* Name */}
                   <div className="space-y-2">
                     <label className="text-[10px] font-space text-gray uppercase block tracking-wider">YOUR NAME</label>
                     <input
@@ -91,6 +116,7 @@ export default function Contact() {
                       className="w-full px-4 py-3.5 glass-input text-sm text-white"
                     />
                   </div>
+                  {/* Email */}
                   <div className="space-y-2">
                     <label className="text-[10px] font-space text-gray uppercase block tracking-wider">EMAIL ADDRESS</label>
                     <input
@@ -102,21 +128,89 @@ export default function Contact() {
                       className="w-full px-4 py-3.5 glass-input text-sm text-white"
                     />
                   </div>
+
+                  {/* Business Name */}
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-space text-gray uppercase block tracking-wider">BUSINESS NAME</label>
+                    <input
+                      type="text"
+                      value={business}
+                      onChange={(e) => setBusiness(e.target.value)}
+                      placeholder="Acme Inc"
+                      className="w-full px-4 py-3.5 glass-input text-sm text-white"
+                    />
+                  </div>
+                  {/* Industry */}
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-space text-gray uppercase block tracking-wider">INDUSTRY</label>
+                    <input
+                      type="text"
+                      value={industry}
+                      onChange={(e) => setIndustry(e.target.value)}
+                      placeholder="e.g. E-commerce, SaaS, Healthcare"
+                      className="w-full px-4 py-3.5 glass-input text-sm text-white"
+                    />
+                  </div>
+
+                  {/* Website */}
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-space text-gray uppercase block tracking-wider">WEBSITE</label>
+                    <input
+                      type="url"
+                      value={website}
+                      onChange={(e) => setWebsite(e.target.value)}
+                      placeholder="https://example.com"
+                      className="w-full px-4 py-3.5 glass-input text-sm text-white"
+                    />
+                  </div>
+                  {/* Phone */}
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-space text-gray uppercase block tracking-wider">PHONE</label>
+                    <input
+                      type="tel"
+                      value={phone}
+                      onChange={(e) => setPhone(e.target.value)}
+                      placeholder="+1 (555) 000-0000"
+                      className="w-full px-4 py-3.5 glass-input text-sm text-white"
+                    />
+                  </div>
+
+                  {/* Budget */}
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-space text-gray uppercase block tracking-wider">BUDGET</label>
+                    <select
+                      value={budget}
+                      onChange={(e) => setBudget(e.target.value)}
+                      className="w-full px-4 py-3.5 bg-slate-950 text-white border border-white/10 rounded-lg text-sm focus:outline-none focus:border-electric-cyan"
+                    >
+                      <option value="">Select Budget Range</option>
+                      <option value="Less than ₹10,000">Less than ₹10,000</option>
+                      <option value="₹10,000 - ₹25,000">₹10,000 - ₹25,000</option>
+                      <option value="₹25,000 - ₹50,000">₹25,000 - ₹50,000</option>
+                      <option value="₹50,000 - ₹1,00,000">₹50,000 - ₹1,00,000</option>
+                      <option value="₹1,00,000+">₹1,00,000+</option>
+                    </select>
+                  </div>
+                  {/* Timeline */}
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-space text-gray uppercase block tracking-wider">TIMELINE</label>
+                    <select
+                      value={timeline}
+                      onChange={(e) => setTimeline(e.target.value)}
+                      className="w-full px-4 py-3.5 bg-slate-950 text-white border border-white/10 rounded-lg text-sm focus:outline-none focus:border-electric-cyan"
+                    >
+                      <option value="">Select Timeline</option>
+                      <option value="Immediate (< 1 month)">Immediate (&lt; 1 month)</option>
+                      <option value="1-2 Months">1-2 Months</option>
+                      <option value="3-6 Months">3-6 Months</option>
+                      <option value="6+ Months / Flexible">6+ Months / Flexible</option>
+                    </select>
+                  </div>
                 </div>
 
+                {/* Message */}
                 <div className="space-y-2">
-                  <label className="text-[10px] font-space text-gray uppercase block tracking-wider">COMPANY NAME</label>
-                  <input
-                    type="text"
-                    value={company}
-                    onChange={(e) => setCompany(e.target.value)}
-                    placeholder="Acme Inc"
-                    className="w-full px-4 py-3.5 glass-input text-sm text-white"
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <label className="text-[10px] font-space text-gray uppercase block tracking-wider">PROJECT DESCRIPTION</label>
+                  <label className="text-[10px] font-space text-gray uppercase block tracking-wider">MESSAGE</label>
                   <textarea
                     required
                     rows={4}
@@ -129,9 +223,9 @@ export default function Contact() {
 
                 <button
                   type="submit"
-                  className="w-full py-4 bg-gradient-to-r from-electric-cyan to-primary-blue text-black font-space text-xs font-bold rounded-lg hover:opacity-90 transition-opacity uppercase tracking-widest"
+                  className="w-full py-4 bg-gradient-to-r from-electric-cyan to-primary-blue text-black font-space text-xs font-bold rounded-lg hover:opacity-90 transition-opacity uppercase tracking-widest flex items-center justify-center space-x-2"
                 >
-                  SEND INQUIRY
+                  <span>🚀 Get Free Consultation</span>
                 </button>
               </form>
             ) : (

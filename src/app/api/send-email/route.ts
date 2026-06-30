@@ -3,7 +3,7 @@ import nodemailer from "nodemailer";
 
 export async function POST(request: Request) {
   try {
-    const { name, email, company, message } = await request.json();
+    const { name, email, businessName, industry, website, phone, budget, timeline, message } = await request.json();
 
     if (!name || !email || !message) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
@@ -14,7 +14,7 @@ export async function POST(request: Request) {
 
     if (!emailPass) {
       console.warn("SMTP EMAIL_PASS environment variable is missing. Logging submission details:");
-      console.log(`Lead Submission: Name: ${name}, Email: ${email}, Company: ${company}, Message: ${message}`);
+      console.log(`Lead Submission: Name: ${name}, Email: ${email}, Business Name: ${businessName}, Industry: ${industry}, Website: ${website}, Phone: ${phone}, Budget: ${budget}, Timeline: ${timeline}, Message: ${message}`);
       return NextResponse.json({
         success: true,
         message: "Submission logged (SMTP credentials not configured in env)"
@@ -32,11 +32,16 @@ export async function POST(request: Request) {
     const mailOptions = {
       from: emailUser,
       to: "kamathambhuvanesh@gmail.com",
-      subject: `New Lead: ${name} (${company || "No Company"})`,
+      subject: `New Lead: ${name} (${businessName || "No Company"})`,
       text: `You have received a new contact submission:\n\n` +
             `Name: ${name}\n` +
             `Email: ${email}\n` +
-            `Company: ${company || "N/A"}\n\n` +
+            `Business Name: ${businessName || "N/A"}\n` +
+            `Industry: ${industry || "N/A"}\n` +
+            `Website: ${website || "N/A"}\n` +
+            `Phone: ${phone || "N/A"}\n` +
+            `Budget: ${budget || "N/A"}\n` +
+            `Timeline: ${timeline || "N/A"}\n\n` +
             `Message:\n${message}`
     };
 
